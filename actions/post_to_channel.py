@@ -3,8 +3,13 @@ from pushbullet import Pushbullet
 
 
 class PostToChannel(Action):
-    def run(self):
-        pb = Pushbullet('API-KEY')
-        channel = pb.channels[1]
-        return channel.push_note('hello from st2', 'hi there, this message came from st2. thanks')
+    def __init__(self, config):
+        self.client = Pushbullet(config['apikey'])
+
+    def get_channel(self, channel):
+        return [c for c in self.client.channels if c.channel_tag == channel][0]
+
+    def run(self, channel, message, subject=''):
+        channel = self.get_channel(channel)
+        return channel.push_note(subject, message)
 
